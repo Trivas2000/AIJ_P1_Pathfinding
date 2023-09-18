@@ -103,11 +103,11 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        if (this.manager.pathfinding.InProgress)
-        {
+        //if (this.manager.pathfinding.InProgress)
+        //{
                 debugMaxNodes.text = "MaxOpenNodes:" + manager.pathfinding.MaxOpenNodes;
                 debugtotalProcessedNodes.text = "TotalPNodes:" + manager.pathfinding.TotalProcessedNodes;
                 debugtotalProcessingTime.text = "TotalPTime:" + manager.pathfinding.TotalProcessingTime;
-            }
+           // }
         }
 }

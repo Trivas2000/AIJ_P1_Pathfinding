@@ -75,40 +75,67 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         public virtual bool Search(out List<NodeRecord> solution, bool returnPartialSolution = false) {
 
             var ProcessedNodes = 0;
-            NodeRecord CurrentNode;
+            NodeRecord currentNode;
 
-            // TODO implement
+            // or if nodes havent been all processed 
+            while (Open.CountOpen() > 0)
+            {
 
-            //While Open is not empty or if nodes havent been all processed 
+                currentNode = Open.GetBestAndRemove();
+                if (currentNode.Equals(GoalNode))
+                {
+                    solution = CalculatePath(currentNode);
+                    return true;
+                }
+                Closed.AddToClosed(currentNode);                
 
-            // CurrentNode is the best one from the Open set, start with that
-            // var CurrentNode = Open......
-            // 
+                foreach (var neighbourNode in currentNode.GetNeighbourList(grid))
+                {
+                    this.ProcessChildNode(currentNode, neighbourNode);
+                    //ProcessedNodes++;
+                }
 
-            //Handle the neighbours/children with something like this
-            //foreach (var neighbourNode in currentNode.GetNeighbourList(grid))
-            //{
-            // this.ProcessChildNode(currentNode, neighbourNode)
-            //}
-
-            //Out of nodes on the openList
+            }
             solution = null;
             return false;
-        
-    }
+
+        }
 
         protected virtual void ProcessChildNode(NodeRecord parentNode, NodeRecord node)
         {
-            // Calculate newCost: parent cost + Calculate Distance Cont 
+            float newCost = parentNode.gCost + CalculateDistanceCost(parentNode, node);
 
-            //If in Closed...
-
-            //If in Open..
-
-            //If node is not in any list ....
-
-            // Finally don't forget to update the actual Grid value: grid.SetGridObject(childNode.x, childNode.y, childNode);
-
+            if (Open.SearchInOpen(node) != null) 
+            {
+                var currentNodeInOpen = Open.SearchInOpen(node);
+                if (newCost < currentNodeInOpen.gCost)
+                {
+                    node.gCost = newCost;
+                    node.CalculateFCost();
+                    node.parent = parentNode;
+                    Open.Replace(currentNodeInOpen, node);
+                }
+            } else if (Closed.SearchInClosed(node) != null) 
+            {
+                var currentNodeInClosed = Closed.SearchInClosed(node);
+                if (newCost < currentNodeInClosed.gCost)
+                {
+                    Closed.RemoveFromClosed(currentNodeInClosed);
+                    node.gCost = newCost;
+                    node.CalculateFCost();
+                    node.parent = parentNode;
+                    Open.AddToOpen(node);
+                }
+            } else
+            {
+                node.gCost = newCost;
+                node.hCost = Heuristic.H(node, this.GoalNode);
+                node.parent = parentNode;
+                node.CalculateFCost();
+                Open.AddToOpen(node);
+            }
+           
+            grid.SetGridObject(node.x, node.y, node);
         }
 
 
@@ -143,11 +170,14 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         public List<NodeRecord> CalculatePath(NodeRecord endNode)
         {
             List<NodeRecord> path = new List<NodeRecord>();
-            path.Add(endNode);
-
-            // TODO implement
-            // Start from the end node and go up until the beggining of the path
-
+            
+            var currentNode = endNode;
+            while (!currentNode.Equals(StartNode))
+            {
+                path.Add(currentNode);
+                currentNode = currentNode.parent;
+            }
+            path.Add(StartNode);
             path.Reverse();
             return path;
         }
