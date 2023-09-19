@@ -1,9 +1,8 @@
-﻿/*using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
+﻿using Assets.Scripts.IAJ.Unity.Pathfinding.Heuristics;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Grid;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
-using System.Runtime.CompilerServices;
 
 namespace Assets.Scripts.IAJ.Unity.Pathfinding
 {
@@ -23,20 +22,40 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             this.Closed = this.NodeRecordArray;
 
         }
-       
+
         // In Node Array A* the only thing that changes is how you process the child node, the search occurs the exact same way so you can the parent's method
         protected override void ProcessChildNode(NodeRecord parentNode, NodeRecord neighbourNode)
         {
-            // TODO implement
-            float F;
-            float G;
-            float H;
-
+            this.TotalProcessedNodes += 1;
+            var newCost = parentNode.gCost + CalculateDistanceCost(parentNode, neighbourNode);
+            if (neighbourNode.status == NodeStatus.Open)
+            {                
+                if (newCost < neighbourNode.gCost)
+                {
+                    var nodeToBeReplaced = NodeRecordArray.SearchInOpen(neighbourNode);
+                    neighbourNode.gCost = newCost;
+                    neighbourNode.CalculateFCost();
+                    neighbourNode.parent = parentNode;
+                    NodeRecordArray.Replace(nodeToBeReplaced, neighbourNode);
+                }
+            } else if (neighbourNode.status == NodeStatus.Closed)
+            {
+                if (newCost < neighbourNode.gCost)
+                {
+                    neighbourNode.gCost = newCost;
+                    neighbourNode.CalculateFCost();
+                    neighbourNode.parent = parentNode;
+                    NodeRecordArray.RemoveFromClosed(neighbourNode);
+                }
+            } else
+            {
+                neighbourNode.gCost = newCost;
+                neighbourNode.hCost = Heuristic.H(neighbourNode, GoalNode);
+                neighbourNode.CalculateFCost();
+                neighbourNode.parent = parentNode;
+                NodeRecordArray.AddToOpen(neighbourNode);
+            }
+            grid.SetGridObject(neighbourNode.x, neighbourNode.y, neighbourNode);
         }
-               
     }
-
-
-       
 }
-*/

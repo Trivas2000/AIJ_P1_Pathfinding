@@ -77,7 +77,6 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             var ProcessedNodes = 0;
             NodeRecord currentNode;
 
-            // or if nodes havent been all processed 
             while (Open.CountOpen() > 0)
             {
 
@@ -86,14 +85,13 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 {
                     solution = CalculatePath(currentNode);
                     return true;
-                }
-                Closed.AddToClosed(currentNode);                
+                }                             
 
                 foreach (var neighbourNode in currentNode.GetNeighbourList(grid))
                 {
                     this.ProcessChildNode(currentNode, neighbourNode);
-                    //ProcessedNodes++;
                 }
+                Closed.AddToClosed(currentNode);
 
             }
             solution = null;
