@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Grid;
 using Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures;
-using System.Runtime.CompilerServices;
 using System;
 
 namespace Assets.Scripts.IAJ.Unity.Pathfinding
@@ -19,7 +18,9 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         public uint TotalProcessedNodes { get; protected set; }
         public int MaxOpenNodes { get; protected set; }
         public float TotalProcessingTime { get; set; }
+        public int Fill { get; set; }
         public bool InProgress { get; set; }
+        public bool TieBreakingOn { get; set; }
         public IOpenSet Open { get; protected set; }
         public IClosedSet Closed { get; protected set; }
         public IHeuristic Heuristic { get; protected set; }
@@ -31,6 +32,11 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         public int GoalPositionX { get; set; }
         public int GoalPositionY { get; set; }
 
+        public AStarPathfinding(IOpenSet open, IClosedSet closed, IHeuristic heuristic, bool tieBreakingOn) : this(open, closed, heuristic)
+        {
+            this.TieBreakingOn = tieBreakingOn;
+        }
+
         public AStarPathfinding(IOpenSet open, IClosedSet closed, IHeuristic heuristic)
         {
             grid = new Grid<NodeRecord>((Grid<NodeRecord> global, int x, int y) => new NodeRecord(x, y));
@@ -38,8 +44,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             this.Closed = closed;
             this.InProgress = false;
             this.Heuristic = heuristic;
-            this.NodesPerSearch = 20; //by default we process all nodes in a single request, but you should change this
-
+            this.NodesPerSearch = 10; //by default we process all nodes in a single request, but you should change this
+            this.TieBreakingOn = false;
         }
         public virtual void InitializePathfindingSearch(int startX, int startY, int goalX, int goalY)
         {
@@ -58,6 +64,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             this.TotalProcessedNodes = 0;
             this.TotalProcessingTime = 0.0f;
             this.MaxOpenNodes = 0;
+            this.Fill = 0;
 
             //Starting with the first node
             var initialNode = new NodeRecord(StartNode.x, StartNode.y)
@@ -74,23 +81,37 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         }
         public virtual bool Search(out List<NodeRecord> solution, bool returnPartialSolution = false) {
 
-            var ProcessedNodes = 0;
-            NodeRecord currentNode;
+            var ProcessedNodes = 1;
+            MaxOpenNodes = 0;
+            TotalProcessedNodes = 0;
+            //TotalProcessingTime = 0.0f;
+
+            NodeRecord currentNode = null;
 
             while (Open.CountOpen() > 0)
             {
-
+                MaxOpenNodes = Math.Max(MaxOpenNodes, Open.CountOpen());
+                //if (ProcessedNodes >= NodesPerSearch)
+                //{
+                //    solution = returnPartialSolution ? CalculatePath(currentNode) : null;
+                //    return true;
+                //}
+                // ProcessedNodes = 0;
                 currentNode = Open.GetBestAndRemove();
                 if (currentNode.Equals(GoalNode))
                 {
                     solution = CalculatePath(currentNode);
+                    this.Fill = Open.CountOpen() + Closed.All().Count;
                     return true;
                 }                             
 
                 foreach (var neighbourNode in currentNode.GetNeighbourList(grid))
                 {
                     this.ProcessChildNode(currentNode, neighbourNode);
+                    ProcessedNodes++;
+                    TotalProcessedNodes++;
                 }
+
                 Closed.AddToClosed(currentNode);
 
             }
@@ -109,7 +130,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 if (newCost < currentNodeInOpen.gCost)
                 {
                     node.gCost = newCost;
-                    node.CalculateFCost();
+                    node.CalculateFCost(this.TieBreakingOn);
                     node.parent = parentNode;
                     Open.Replace(currentNodeInOpen, node);
                 }
@@ -120,7 +141,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 {
                     Closed.RemoveFromClosed(currentNodeInClosed);
                     node.gCost = newCost;
-                    node.CalculateFCost();
+                    node.CalculateFCost(this.TieBreakingOn);
                     node.parent = parentNode;
                     Open.AddToOpen(node);
                 }
@@ -129,7 +150,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 node.gCost = newCost;
                 node.hCost = Heuristic.H(node, this.GoalNode);
                 node.parent = parentNode;
-                node.CalculateFCost();
+                node.CalculateFCost(this.TieBreakingOn);
                 Open.AddToOpen(node);
             }
            
@@ -179,6 +200,5 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             path.Reverse();
             return path;
         }
-
     }
 }

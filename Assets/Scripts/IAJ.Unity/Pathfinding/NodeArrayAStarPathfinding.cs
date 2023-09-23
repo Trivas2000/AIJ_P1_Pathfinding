@@ -26,17 +26,16 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
         // In Node Array A* the only thing that changes is how you process the child node, the search occurs the exact same way so you can the parent's method
         protected override void ProcessChildNode(NodeRecord parentNode, NodeRecord neighbourNode)
         {
-            this.TotalProcessedNodes += 1;
             var newCost = parentNode.gCost + CalculateDistanceCost(parentNode, neighbourNode);
             if (neighbourNode.status == NodeStatus.Open)
             {                
                 if (newCost < neighbourNode.gCost)
                 {
-                    var nodeToBeReplaced = NodeRecordArray.SearchInOpen(neighbourNode);
+                    var nodeToBeReplaced = Open.SearchInOpen(neighbourNode);
                     neighbourNode.gCost = newCost;
                     neighbourNode.CalculateFCost();
                     neighbourNode.parent = parentNode;
-                    NodeRecordArray.Replace(nodeToBeReplaced, neighbourNode);
+                    Open.Replace(nodeToBeReplaced, neighbourNode);
                 }
             } else if (neighbourNode.status == NodeStatus.Closed)
             {
@@ -45,7 +44,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                     neighbourNode.gCost = newCost;
                     neighbourNode.CalculateFCost();
                     neighbourNode.parent = parentNode;
-                    NodeRecordArray.RemoveFromClosed(neighbourNode);
+                    Closed.RemoveFromClosed(neighbourNode);
                 }
             } else
             {
@@ -53,7 +52,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 neighbourNode.hCost = Heuristic.H(neighbourNode, GoalNode);
                 neighbourNode.CalculateFCost();
                 neighbourNode.parent = parentNode;
-                NodeRecordArray.AddToOpen(neighbourNode);
+                Open.AddToOpen(neighbourNode);
             }
             grid.SetGridObject(neighbourNode.x, neighbourNode.y, neighbourNode);
         }

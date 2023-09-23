@@ -20,33 +20,33 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
         public void Initialize()
         {
-           //TODO implement
-            throw new NotImplementedException();
+           this.Closed.Clear();
         }
 
 
         public void AddToClosed(NodeRecord nodeRecord)
         {
-            //TODO implement
-            throw new NotImplementedException();
+            this.Closed.Add(new Vector2(nodeRecord.x, nodeRecord.y), nodeRecord);
         }
 
         public void RemoveFromClosed(NodeRecord nodeRecord)
         {
-            //TODO implement
-            throw new NotImplementedException();
+            this.Closed.Remove(new Vector2(nodeRecord.x, nodeRecord.y));
         }
 
         public NodeRecord SearchInClosed(NodeRecord nodeRecord)
         {
-            //TODO implement
-            throw new NotImplementedException();
+            NodeRecord node;
+            if (this.Closed.TryGetValue(new Vector2(nodeRecord.x, nodeRecord.y), out node))
+            {
+                return node;
+            }
+            return null;
         }   
 
         public ICollection<NodeRecord> All()
         {
-            //TODO implement
-            throw new NotImplementedException();
+            return this.Closed.Values;
         }
 
       

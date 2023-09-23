@@ -16,7 +16,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
 
             for (int i = 0; i < nodes.Count; i++)
             {
-                this.NodeRecords[i] = new NodeRecord(nodes[i].x, nodes[i].y) { index = i };
+                this.NodeRecords[i] = nodes[i]; // new NodeRecord(nodes[i].x, nodes[i].y) { index = i };
             }
 
             this.Open = new NodePriorityHeap();

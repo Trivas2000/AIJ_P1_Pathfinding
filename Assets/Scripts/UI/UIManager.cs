@@ -23,8 +23,9 @@ public class UIManager : MonoBehaviour
     Text debugMaxNodes;
     Text debugDArray;
     Text debugBounds;
+    Text debugFill;
 
-    bool useGoal;
+    bool useGoal = false;
 
     private int currentX, currentY;
     VisualGridManager visualGrid;
@@ -48,6 +49,7 @@ public class UIManager : MonoBehaviour
         debugMaxNodes = debugTexts[6];
         debugWalkable = debugTexts[7];
         debugDArray = debugTexts[8];
+        debugFill = debugTexts[7];
         useGoal = manager.useGoalBound;
         currentX = -2;
         currentY = -2;
@@ -80,20 +82,20 @@ public class UIManager : MonoBehaviour
 
                         if (node.isWalkable)
                         {
-                           if (useGoal)
+                            if (useGoal)
                             {
- /*                               var array = "";
+                                var array = "";
                                 var goalBoundingPathfinder = (GoalBoundAStarPathfinding)manager.pathfinding;
-                                if (goalBoundingPathfinder.goalBounds.ContainsKey(new Vector2(x, y)))
-                                {
-                                    var boundingBox = goalBoundingPathfinder.goalBounds[new Vector2(x, y)];
-                                    array += "Left" + boundingBox["left"] + "\n";
-                                    array += "Right" + boundingBox["right"] + "\n";
-                                    array += "Up" + boundingBox["up"] + "\n";
-                                    array += "Down" + boundingBox["down"] + "\n";
-                                    debugDArray.text = array;
-                                    visualGrid.fillBoundingBox(node);
-*/
+                                //if (goalBoundingPathfinder.goalBounds.ContainsKey(new Vector2(x, y)))
+                                //{
+                                //    var boundingBox = goalBoundingPathfinder.goalBounds[new Vector2(x, y)];
+                                //    array += "Left" + boundingBox[Direction.W] + "\n";
+                                //    array += "Right" + boundingBox[Direction.E] + "\n";
+                                //    array += "Up" + boundingBox[Direction.N] + "\n";
+                                //    array += "Down" + boundingBox[Direction.S] + "\n";
+                                //    debugDArray.text = array;
+                                //    visualGrid.fillBoundingBox(node);
+
                             }
 
                         }
@@ -105,9 +107,11 @@ public class UIManager : MonoBehaviour
 
         //if (this.manager.pathfinding.InProgress)
         //{
-                debugMaxNodes.text = "MaxOpenNodes:" + manager.pathfinding.MaxOpenNodes;
-                debugtotalProcessedNodes.text = "TotalPNodes:" + manager.pathfinding.TotalProcessedNodes;
-                debugtotalProcessingTime.text = "TotalPTime:" + manager.pathfinding.TotalProcessingTime;
-           // }
-        }
+        debugMaxNodes.text = "MaxOpenNodes:" + manager.pathfinding.MaxOpenNodes;
+        debugtotalProcessedNodes.text = "TotalPNodes:" + manager.pathfinding.TotalProcessedNodes;
+        debugtotalProcessingTime.text = "TotalPTime:" + manager.pathfinding.TotalProcessingTime;
+        debugFill.text = "Fill:" + manager.pathfinding.Fill;
+        // }
+    
+    }
 }

@@ -31,7 +31,7 @@ public class VisualGridManager : MonoBehaviour
     [System.Serializable]
     public struct boxColor
     {
-       public string direction;
+       public Direction direction;
        public Color color;
     }
 
@@ -194,10 +194,10 @@ public class VisualGridManager : MonoBehaviour
 
 
     // Method that computes the bounding box according to the colors defined in the inspector
-    /*public void fillBoundingBox(NodeRecord node)
+    public void fillBoundingBox(NodeRecord node)
     {
         var goalBoundingPathfinder = (GoalBoundAStarPathfinding)manager.pathfinding;
-      
+
         for (int x = 0; x < this.width; x++)
             for (int y = 0; y < this.height; y++)
             {
@@ -209,8 +209,5 @@ public class VisualGridManager : MonoBehaviour
                             this.SetObjectColor(x, y, c.color);
                 }
             }
-
-
-      
-    }*/
+    }
 }

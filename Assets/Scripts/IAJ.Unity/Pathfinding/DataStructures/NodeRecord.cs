@@ -29,6 +29,12 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
         // Node Record Array Index
         public int index;
         public NodeStatus status;
+
+        //Solving Ties
+        public float p = 0.01f;
+
+        //
+        public Direction direction;
         
         
         public override string ToString()
@@ -54,6 +60,15 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.DataStructures
         public NodeRecord(int x, int y, int _index) : this(x,y)
         {
             index = _index;
+        }
+
+        public void CalculateFCost(bool solveTies)
+        {
+            if (solveTies)
+            {
+                fCost = gCost + (1 + p) * hCost;
+            }
+            else CalculateFCost();
         }
 
         public void CalculateFCost()
