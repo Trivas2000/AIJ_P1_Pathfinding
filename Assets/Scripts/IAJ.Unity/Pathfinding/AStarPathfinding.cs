@@ -44,7 +44,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             this.Closed = closed;
             this.InProgress = false;
             this.Heuristic = heuristic;
-            this.NodesPerSearch = 10; //by default we process all nodes in a single request, but you should change this
+            this.NodesPerSearch = 20; //by default we process all nodes in a single request, but you should change this
             this.TieBreakingOn = false;
         }
         public virtual void InitializePathfindingSearch(int startX, int startY, int goalX, int goalY)
@@ -83,20 +83,14 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
             var ProcessedNodes = 1;
             MaxOpenNodes = 0;
-            TotalProcessedNodes = 0;
             //TotalProcessingTime = 0.0f;
 
             NodeRecord currentNode = null;
 
-            while (Open.CountOpen() > 0)
+            while (Open.CountOpen() > 0 && ProcessedNodes <= NodesPerSearch)
             {
                 MaxOpenNodes = Math.Max(MaxOpenNodes, Open.CountOpen());
-                //if (ProcessedNodes >= NodesPerSearch)
-                //{
-                //    solution = returnPartialSolution ? CalculatePath(currentNode) : null;
-                //    return true;
-                //}
-                // ProcessedNodes = 0;
+
                 currentNode = Open.GetBestAndRemove();
                 if (currentNode.Equals(GoalNode))
                 {
@@ -116,6 +110,10 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
             }
             solution = null;
+            if (returnPartialSolution)
+            {
+                solution = CalculatePath(currentNode);
+            }
             return false;
 
         }

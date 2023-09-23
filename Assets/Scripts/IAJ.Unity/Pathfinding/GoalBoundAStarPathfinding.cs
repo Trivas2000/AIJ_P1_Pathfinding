@@ -68,7 +68,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
                 {
                     ProcessNeighbourNode(currentNode, neighbourNode);
                 }
-              
+
                 this.Closed.AddToClosed(currentNode);
                 this.debugClosed = this.Closed.All().Count;
             }
@@ -76,8 +76,8 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
 
 
             //At the end it is important to "clean" the Open and Closed Set
-           // this.Open.Initialize();
-           // this.Closed.Initialize();
+            // this.Open.Initialize();
+            // this.Closed.Initialize();
         }
 
         public void FirstFloodFillIteration(NodeRecord original)
@@ -147,10 +147,11 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             }
         }
 
-        
+
         protected override void ProcessChildNode(NodeRecord parentNode, NodeRecord node)
         {
-            if (InsindeGoalBoundBox(StartNode.x, StartNode.y, node.x, node.y, parentNode.direction))
+
+            if (InsindeGoalBoundBox(parentNode.x, parentNode.y, node.x, node.y, GetGoalNodeDirection(parentNode)))
             {
                 base.ProcessChildNode(parentNode, node);
             }
@@ -199,6 +200,21 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding
             }
 
             goalBounds.Add(new Vector2(node.x, node.y), solutionDict);
+        }
+
+
+        public Direction GetGoalNodeDirection(NodeRecord startNode)
+        {
+            Dictionary<Direction, Vector4> boundingBoxes = this.goalBounds[new Vector2(startNode.x, startNode.y)];
+            foreach (var direction in boundingBoxes.Keys)
+            {
+                if (InsindeGoalBoundBox(startNode.x, startNode.y, GoalPositionX, GoalPositionY, direction))
+                {
+                    return direction;
+                }
+            }
+            return new Direction();
+            
         }
     }
 }

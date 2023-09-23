@@ -41,8 +41,8 @@ public class PathfindingManager : MonoBehaviour
     [Header("Pahfinding Settings")]
     [Tooltip("Add settings to your liking, useful for faster testing")]
     //public properties useful for testing, you can add other booleans here such as which heuristic to use
-    public bool partialPath = false;
-    public bool useGoalBound = true;
+    public bool partialPath;
+    public bool useGoalBound;
    
     //Grid configuration
     public static int width;
@@ -69,7 +69,8 @@ public class PathfindingManager : MonoBehaviour
     {
         // Finding reference of Visual Grid Manager
         visualGrid = GameObject.FindObjectOfType<VisualGridManager>();
-        useGoalBound = true;
+        useGoalBound = false;
+        partialPath = true;
 
         // Creating the Path for the Grid and Creating it
         var gridPath = "Assets/Resources/Grid/" + gridName + ".txt";
@@ -77,9 +78,9 @@ public class PathfindingManager : MonoBehaviour
 
 
         // Creating and Initializing the Pathfinding class, you can change the open, closed and heuristic sets here
-        this.pathfinding = new GoalBoundAStarPathfinding(new EuclideanDistance());
-        //this.pathfinding = new AStarPathfinding(new SimpleUnorderedNodeList(), new SimpleUnorderedNodeList(),
-        //    new EuclideanDistance(), false);
+        //this.pathfinding = new NodeArrayAStarPathfinding(new EuclideanDistance());
+        this.pathfinding = new AStarPathfinding(new SimpleUnorderedNodeList(), new SimpleUnorderedNodeList(),
+            new EuclideanDistance(), false);
 
         visualGrid.GridMapVisual(textLines, this.pathfinding.grid);
 
